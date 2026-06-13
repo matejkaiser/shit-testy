@@ -1,0 +1,339 @@
+<!--
+  ============================================================
+  JAK TO UPRAVIT
+  ------------------------------------------------------------
+  1) OBRÁZKY KARET: u každé karty v CARDS doplň "img":"URL".
+     URL klidně z Miowebu/WordPressu. null = placeholder.
+  2) LANDING: CONFIG.landingUrl = odkaz na živák.
+  3) KOLIK OZNAČIT: CONFIG.need (výchozí 3).
+  4) Karty se při každém spuštění náhodně zamíchají.
+  ============================================================
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#e9e1d2; --ink:#211c16; --ink-soft:#5c5347; --muted:#8a7f6e;
+    --gold-2:#a07f34; --gold-line:#b3924a; --red:#c0392b;
+    --green:#3e6b4a; --green-2:#4f7d5b; --crimson:#7d2f27; --crimson-2:#9c4339;
+    --grad:linear-gradient(176deg,#d2b35e 0%,#a37f34 55%,#7c5d22 100%);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overflow:hidden}
+  body{
+    font-family:"Inter",system-ui,sans-serif;color:var(--ink);
+    background:radial-gradient(120% 120% at 50% 0%,#221f19 0%,#161410 70%,#100e0b 100%);
+    display:flex;align-items:center;justify-content:center;padding:14px;
+  }
+  .app{width:100%;max-width:430px;display:flex;flex-direction:column;height:100%;max-height:880px}
+
+  /* topbar + picks */
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+  .brand{font-family:"Archivo";font-weight:800;font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+  .pcount{font-family:"Archivo";font-weight:700;font-size:12px;letter-spacing:.1em;color:#cdb277}
+  .pcount b{color:#fff}
+  .picks{display:flex;justify-content:center;gap:12px;margin-bottom:9px}
+  .pick{width:15px;height:15px;transform:rotate(45deg);border:1.5px solid rgba(179,146,74,.45);border-radius:2px;transition:.3s}
+  .pick.on{background:var(--grad);border-color:transparent;box-shadow:0 0 16px -2px rgba(179,146,74,.85);animation:pop .4s cubic-bezier(.2,1.5,.4,1)}
+  @keyframes pop{0%{transform:rotate(45deg) scale(.3)}100%{transform:rotate(45deg) scale(1)}}
+  .instr{text-align:center;font-family:"Inter";font-weight:600;font-size:14px;color:#dcca9b;margin-bottom:13px;line-height:1.3}
+  .instr b{color:#fff}
+
+  /* deck */
+  .deck{position:relative;flex:1;min-height:0;animation:deckIn .6s ease both}
+  @keyframes deckIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .tcard{
+    position:absolute;inset:0;background:var(--paper);border-radius:22px;overflow:hidden;
+    box-shadow:0 24px 54px -16px rgba(0,0,0,.5);display:flex;flex-direction:column;will-change:transform;
+  }
+  .tcard::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;mix-blend-mode:overlay;z-index:1;
+    background:radial-gradient(140% 120% at 80% 8%,rgba(255,255,255,.35),transparent 45%)}
+  .tcard.flash-yes{box-shadow:0 0 0 3px rgba(62,107,74,.8),0 24px 54px -16px rgba(0,0,0,.5)}
+  .tcard.flash-no{box-shadow:0 0 0 3px rgba(125,47,39,.8),0 24px 54px -16px rgba(0,0,0,.5)}
+
+  .sheen{position:absolute;inset:0;z-index:3;pointer-events:none;transform:translateX(-130%);
+    background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.38) 49%,transparent 64%)}
+  .tcard.front .sheen{animation:sheen 1s ease .12s both}
+  @keyframes sheen{to{transform:translateX(130%)}}
+
+  .tc-body{flex:1;min-height:0;padding:24px 22px 14px;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
+  .shittag{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+  .shittag .arr{width:46px;height:42px;flex:none}
+  .stwrap{display:inline-flex;flex-direction:column;align-items:flex-start}
+  .stxt{font-family:"Archivo";font-weight:800;font-size:clamp(1rem,4.6vw,1.3rem);color:var(--red);letter-spacing:-.01em;line-height:1}
+  .uline{width:100%;height:9px;margin-top:2px}
+  .headline{font-family:"Archivo";font-weight:800;color:var(--ink);font-size:clamp(1.45rem,6.6vw,2.05rem);line-height:1.05;letter-spacing:-.015em}
+  .headline .g{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+  .desc{font-family:"Inter";font-weight:500;font-size:13px;line-height:1.5;color:var(--ink-soft);margin-top:13px}
+  .desc .g{font-weight:700;color:var(--gold-2)}
+
+  .tc-img{flex:0 0 40%;background:linear-gradient(160deg,#d8ccb4,#c6b794);overflow:hidden;position:relative;border-radius:0 0 22px 22px}
+  .tc-img img{width:100%;height:100%;object-fit:cover;display:block}
+  .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;padding:18px}
+  .ph svg{width:32px;height:32px;color:#8c7c55;opacity:.7}
+  .ph .tag{font-family:"Archivo";font-weight:700;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#9a875c}
+  .ph .scene{font-family:"Inter";font-size:11.5px;line-height:1.4;color:#6e6248;max-width:28ch}
+  .ph::after{content:"";position:absolute;inset:12px;border:1px dashed rgba(124,93,34,.3);border-radius:10px}
+
+  /* stamps */
+  .lab{position:absolute;top:20px;font-family:"Archivo";font-weight:800;font-size:18px;letter-spacing:.06em;
+    padding:9px 18px;border-radius:11px;border:3px solid;opacity:0;pointer-events:none;z-index:6;text-transform:uppercase;line-height:1}
+  .lab-yes{left:20px;color:var(--green);border-color:var(--green);background:rgba(31,138,85,.12);transform:rotate(-12deg) scale(.6)}
+  .lab-no{right:20px;color:var(--crimson);border-color:var(--crimson);background:rgba(168,39,24,.12);transform:rotate(12deg) scale(.6)}
+  .lab-yes.show{animation:stampY .35s cubic-bezier(.2,1.5,.4,1) forwards}
+  .lab-no.show{animation:stampN .35s cubic-bezier(.2,1.5,.4,1) forwards}
+  @keyframes stampY{0%{opacity:0;transform:rotate(-12deg) scale(1.7)}100%{opacity:1;transform:rotate(-12deg) scale(1)}}
+  @keyframes stampN{0%{opacity:0;transform:rotate(12deg) scale(1.7)}100%{opacity:1;transform:rotate(12deg) scale(1)}}
+
+  /* action buttons */
+  .actions{display:flex;gap:12px;margin-top:18px;flex:none}
+  .bact{flex:1;display:flex;align-items:center;justify-content:center;gap:11px;cursor:pointer;border:none;
+    border-radius:15px;padding:15px 12px;color:#fff;position:relative;overflow:hidden;
+    transition:transform .12s ease,box-shadow .25s ease,filter .2s ease}
+  .bact::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.09),transparent 55%);pointer-events:none}
+  .bact:hover{transform:translateY(-2px);filter:brightness(1.04)}
+  .bact:active{transform:translateY(0) scale(.97)}
+  .bact .bico{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex:none;z-index:2}
+  .bact .bico svg{width:18px;height:18px}
+  .bcol{display:flex;flex-direction:column;align-items:flex-start;line-height:1.05;z-index:2}
+  .bbig{font-family:"Archivo";font-weight:800;font-size:19px;letter-spacing:.04em}
+  .bsub{font-family:"Inter";font-weight:500;font-size:10px;opacity:.82;margin-top:2px}
+  .bact.no{background:linear-gradient(165deg,var(--crimson-2),var(--crimson));box-shadow:0 12px 26px -12px rgba(125,47,39,.6),inset 0 1px 0 rgba(255,255,255,.1)}
+  .bact.yes{background:linear-gradient(165deg,var(--green-2),var(--green));box-shadow:0 12px 26px -12px rgba(62,107,74,.6),inset 0 1px 0 rgba(255,255,255,.1)}
+
+  .hint{text-align:center;font-family:"Inter";font-size:11px;color:#6e6453;margin-top:11px;flex:none}
+
+  /* final overlay */
+  .overlay{position:fixed;inset:0;z-index:50;background:rgba(16,14,11,.7);backdrop-filter:blur(5px);
+    display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .4s ease}
+  .overlay.on{opacity:1;pointer-events:auto}
+  .fin{width:100%;max-width:400px;max-height:94vh;overflow-y:auto;background:var(--paper);border-radius:22px;position:relative;text-align:center;
+    padding:40px 30px 34px;box-shadow:0 30px 70px -18px rgba(0,0,0,.6);transform:translateY(26px) scale(.95);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+  .overlay.on .fin{transform:none}
+  .fin::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;mix-blend-mode:overlay;border-radius:22px;
+    background:radial-gradient(140% 120% at 85% 6%,rgba(255,255,255,.4),transparent 45%)}
+  .seal{position:relative;z-index:2;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    font-family:"Archivo";font-weight:800;font-size:13px;letter-spacing:.18em;color:var(--gold-2);
+    border:1.5px solid var(--gold-line);border-radius:99px;padding:8px 18px;margin-bottom:20px;animation:sealIn .6s ease .15s both}
+  @keyframes sealIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+  .seal .dia{display:inline-block;width:6px;height:6px;background:var(--grad);transform:rotate(45deg)}
+  .fin h2{position:relative;z-index:2;font-family:"Archivo";font-weight:800;font-size:clamp(1.5rem,6vw,1.95rem);line-height:1.1;color:var(--ink);letter-spacing:-.015em}
+  .fin .lead{position:relative;z-index:2;font-family:"Inter";font-weight:600;font-size:14px;color:var(--ink-soft);margin-top:14px}
+  .fin .conn{position:relative;z-index:2;margin:11px 0;line-height:0}
+  .fin .conn svg{width:22px;height:22px;stroke:var(--gold-2);opacity:.55}
+  .fin .qhook{position:relative;z-index:2;font-family:"Archivo";font-weight:800;font-size:clamp(1.15rem,4.8vw,1.45rem);line-height:1.15;letter-spacing:-.01em;
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+  .fin .reframe{position:relative;z-index:2;font-family:"Inter";font-weight:600;font-size:15px;line-height:1.55;color:var(--ink)}
+  .fin .reframe b{color:var(--gold-2)}
+  .fdiv{position:relative;z-index:2;display:flex;align-items:center;gap:10px;margin:24px 0}
+  .fdiv .ln{flex:1;height:1px;background:var(--gold-line);opacity:.5}
+  .fdiv .dia{width:6px;height:6px;background:var(--grad);transform:rotate(45deg)}
+  .gift{position:relative;z-index:2;border:1.5px solid rgba(124,93,34,.35);border-radius:14px;padding:17px 16px;background:rgba(255,255,255,.42);text-align:center;margin-bottom:18px}
+  .gift .geye{font-family:"Archivo";font-weight:700;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-2);display:flex;align-items:center;justify-content:center;gap:7px}
+  .gift .geye svg{width:15px;height:15px;stroke:var(--gold-2)}
+  .gift .gtitle{font-family:"Archivo";font-weight:800;font-size:1.15rem;color:var(--ink);margin-top:8px;line-height:1.15}
+  .gift .gdesc{font-family:"Inter";font-weight:500;font-size:12.5px;line-height:1.5;color:var(--ink-soft);margin-top:8px}
+  .gift .gprice{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:13px}
+  .gift .old{font-family:"Inter";font-weight:600;font-size:15px;color:var(--muted);text-decoration:line-through}
+  .gift .free{font-family:"Archivo";font-weight:800;font-size:1.25rem;color:var(--green);letter-spacing:.02em}
+  .btn-cta{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;cursor:pointer;text-decoration:none;
+    color:#fff;background:linear-gradient(180deg,#e23b51,#c41f3a);border:none;padding:17px 16px;border-radius:11px;
+    box-shadow:0 14px 30px -10px rgba(196,31,58,.65);transition:transform .15s ease;animation:glowR 2.4s ease-in-out infinite}
+  .btn-cta:hover{transform:translateY(-2px)}
+  .cta-main{display:flex;align-items:center;gap:12px;font-family:"Archivo";font-weight:800;font-size:clamp(15px,4.2vw,17px);letter-spacing:.04em;text-transform:uppercase}
+  .cta-main svg{width:20px;height:20px}
+  .cta-sub{font-family:"Inter";font-weight:500;font-size:11px;letter-spacing:.05em;opacity:.9;text-transform:uppercase}
+  @keyframes glowR{0%,100%{box-shadow:0 14px 30px -10px rgba(196,31,58,.6)}50%{box-shadow:0 14px 40px -8px rgba(226,59,81,.9)}}
+  .detail{position:relative;z-index:2;font-family:"Inter";font-size:12px;color:var(--muted);margin-top:14px}
+  .restart{position:relative;z-index:2;background:none;border:none;color:var(--muted);font-family:"Inter";font-size:12.5px;cursor:pointer;margin-top:18px;text-decoration:underline;text-underline-offset:3px}
+  .restart:hover{color:var(--ink-soft)}
+
+  @media(min-width:520px){ .app{max-height:790px} }
+</style>
+
+<div class="app">
+  <div class="topbar">
+    <span class="brand" id="brand">Ženské sh*t testy</span>
+    <span class="pcount">OZNAČENO <b id="selN">0</b> / <span id="needN">3</span></span>
+  </div>
+  <div class="picks" id="picks"></div>
+  <div class="instr">Označ <b>3 testy</b>, které Ti dává Tvá žena.</div>
+
+  <div class="deck" id="deck"></div>
+
+  <div class="actions">
+    <button class="bact no" id="btnNo">
+      <span class="bico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 6l12 12M18 6L6 18"/></svg></span>
+      <span class="bcol"><span class="bbig">NE</span><span class="bsub">takhle mě netestuje</span></span>
+    </button>
+    <button class="bact yes" id="btnYes">
+      <span class="bico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><path d="M5 13l4 4L19 7"/></svg></span>
+      <span class="bcol"><span class="bbig">ANO</span><span class="bsub">takhle mě testuje</span></span>
+    </button>
+  </div>
+  <div class="hint" id="hint">Klepni na ANO nebo NE u každého testu</div>
+</div>
+
+<div class="overlay" id="overlay"><div class="fin" id="fin"></div></div>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#d2b35e"/><stop offset=".55" stop-color="#a37f34"/><stop offset="1" stop-color="#7c5d22"/>
+  </linearGradient>
+</defs></svg>
+
+<script>
+const CONFIG = {
+  brand:"Ženské sh*t testy",
+  need:3,
+  landingUrl:"https://muzskaalchymie.cz/zivak/"
+};
+
+const CARDS = [
+  { img:null, scene:"Žena s rukama v bok, vyčítavý pohled; muž v pozadí zabraný do práce / telefonu.",
+    h:`„Nikdy na mě nemáš <span class="g">čas</span>.“`, d:`Testuje, jestli se začneš <span class="g">omlouvat</span>, nebo zůstaneš klidný.` },
+  { img:null, scene:"Žena odvrácená, zkřížené ruce; muž klidný, zůstává přítomný.",
+    h:`„Vůbec mě <span class="g">nemáš rád</span>.“`, d:`Čeká, jestli budeš dokazovat opak, nebo zůstaneš ve <span class="g">svém středu</span>.` },
+  { img:null, scene:"Žena vyčítavě gestikuluje; muž zamyšlený, neskáče do obrany.",
+    h:`„Nikdy mě <span class="g">nepochválíš</span>.“`, d:`Vtahuje tě do hádky o faktech, místo aby řešila <span class="g">pocit</span> za tím.` },
+  { img:null, scene:"Žena s obviňujícím gestem; muž s otevřenou dlaní, lehce v defenzivě.",
+    h:`„Ty se o mě vůbec <span class="g">nezajímáš</span>.“`, d:`Generalizace, která tě má dostat do <span class="g">obranné pozice</span>.` },
+  { img:null, scene:"Žena provokativně s telefonem, napůl odcházející; muž pozoruje, nehne brvou.",
+    h:`„Tak já půjdu s tím klukem <span class="g">z workshopu</span>, ten si na mě <span class="g">čas udělá</span>.“`, d:`Klasický test přes <span class="g">žárlivost</span> a <span class="g">nahraditelnost</span>.` },
+  { img:null, scene:"Žena drží telefon a ukazuje na něj; muž klidný, neobhajuje se.",
+    h:`„Moje kamarádka říká, že její přítel by tohle <span class="g">nikdy neudělal</span>.“`, d:`Srovnání s jiným mužem — testuje, jestli začneš dokazovat svou <span class="g">hodnotu</span>.` },
+  { img:null, scene:"Žena vyčítavě/nostalgicky; muž sebejistý, stojí pevně v tom, kdo je teď.",
+    h:`„Dřív jsi byl <span class="g">úplně jiný</span>.“`, d:`Testuje, jestli se začneš omlouvat za to, <span class="g">kdo jsi teď</span>.` },
+  { img:null, scene:"Žena tázavě s rozhozenýma rukama; muž přebírá iniciativu.",
+    h:`„Proč se nikdy <span class="g">nerozhoduješ ty</span>?“`, d:`Zpochybňuje tvůj <span class="g">leadership</span> — čeká, jestli se složíš, nebo převezmeš iniciativu.` },
+  { img:null, scene:"Žena rezignovaně/ostře; muž pevný, klidný nervový systém.",
+    h:`„Ty prostě nikdy nic <span class="g">nezařídíš</span>.“`, d:`Útok na tvoji schopnost vést — testuje stabilitu tvého <span class="g">nervového systému</span>.` },
+  { img:null, scene:"Vážný moment, odstup mezi nimi; žena vážná, muž klidný a přítomný.",
+    h:`„Nevím, jestli nám to spolu <span class="g">funguje</span>.“`, d:`Nejtěžší z nich — <span class="g">panika nebo doprošování</span> = okamžitý propad.` }
+];
+
+const FINAL = {
+  cta:"Zajistit si místo na živém vysílání zdarma",
+  detail:"Živě a zdarma · v pondělí 22. 6. ve 20:00 · míst je omezeně"
+};
+
+const ARROW = `<svg class="arr" viewBox="0 0 60 54" fill="none"><path d="M54 9 C 26 4, 13 17, 16 40" stroke="#c0392b" stroke-width="4" stroke-linecap="round"/><path d="M7 31 L16 43 L27 36" stroke="#c0392b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const ULINE = `<svg class="uline" viewBox="0 0 200 10" preserveAspectRatio="none"><path d="M2 6 Q 50 1 100 6 T 198 5" stroke="#c0392b" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>`;
+
+const NEED = CONFIG.need;
+let queue = [], deckIndex = 0, selected = 0, busy = false, stackEls = [];
+
+const deck=document.getElementById('deck');
+const overlay=document.getElementById('overlay');
+const finEl=document.getElementById('fin');
+const hint=document.getElementById('hint');
+document.getElementById('brand').textContent=CONFIG.brand;
+document.getElementById('needN').textContent=NEED;
+
+const slotT = s => s===0?'translateY(0) scale(1)':s===1?'translateY(13px) scale(.95)':'translateY(26px) scale(.90)';
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function phImg(scene){
+  return `<div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.6"/><path d="M21 15l-5-5L5 21"/></svg>
+    <span class="tag">Obrázek scény</span><span class="scene">${scene}</span></div>`;
+}
+
+function buildCard(c){
+  const el=document.createElement('div'); el.className='tcard';
+  el.innerHTML=`
+    <div class="sheen"></div>
+    <span class="lab lab-yes">Ano</span>
+    <span class="lab lab-no">Ne</span>
+    <div class="tc-body">
+      <div class="shittag">${ARROW}<span class="stwrap"><span class="stxt">Tohle je sh*t test</span>${ULINE}</span></div>
+      <h1 class="headline">${c.h}</h1>
+      <p class="desc">${c.d}</p>
+    </div>
+    <div class="tc-img">${c.img ? `<img src="${c.img}" alt="">` : phImg(c.scene)}</div>`;
+  return el;
+}
+
+function renderPicks(){
+  let h=''; for(let i=0;i<NEED;i++) h+=`<span class="pick${i<selected?' on':''}"></span>`;
+  document.getElementById('picks').innerHTML=h;
+  document.getElementById('selN').textContent=selected;
+}
+
+function renderStack(){
+  deck.innerHTML=''; stackEls=[];
+  if(deckIndex>=queue.length){ showFinal(); return; }
+  hint.style.visibility = (deckIndex===0 && selected===0) ? 'visible':'hidden';
+  const end=Math.min(deckIndex+3,queue.length);
+  for(let i=deckIndex;i<end;i++){
+    const slot=i-deckIndex;
+    const el=buildCard(queue[i]);
+    el.style.transition='none'; el.style.transform=slotT(slot); el.style.zIndex=10-slot;
+    if(slot===0) el.classList.add('front');
+    deck.appendChild(el); stackEls[slot]=el;
+  }
+}
+
+function decide(dir){
+  if(busy) return; busy=true;
+  const el=stackEls[0]; if(!el){busy=false;return;}
+  const lab=el.querySelector(dir==='right'?'.lab-yes':'.lab-no');
+  lab.classList.add('show');
+  el.classList.add(dir==='right'?'flash-yes':'flash-no');
+  // promote cards behind smoothly
+  if(stackEls[1]){stackEls[1].style.transition='transform .45s cubic-bezier(.3,.8,.3,1)';stackEls[1].style.transform=slotT(0);stackEls[1].style.zIndex=10;}
+  if(stackEls[2]){stackEls[2].style.transition='transform .45s cubic-bezier(.3,.8,.3,1)';stackEls[2].style.transform=slotT(1);}
+  setTimeout(()=>{
+    const x=dir==='right'?'135%':'-135%', rot=dir==='right'?18:-18;
+    el.style.transition='transform .5s cubic-bezier(.4,0,.2,1),opacity .5s ease';
+    el.style.transform=`translate(${x},-34px) rotate(${rot}deg) scale(.88)`; el.style.opacity='0';
+    setTimeout(()=>{
+      deckIndex++; busy=false;
+      if(dir==='right'){ selected++; renderPicks(); if(selected>=NEED){ showFinal(); return; } }
+      if(deckIndex>=queue.length){ showFinal(); return; }
+      renderStack();
+    },470);
+  },190);
+}
+
+document.getElementById('btnNo').onclick=()=>decide('left');
+document.getElementById('btnYes').onclick=()=>decide('right');
+document.addEventListener('keydown',e=>{ if(overlay.classList.contains('on'))return;
+  if(e.key==='ArrowLeft') decide('left'); if(e.key==='ArrowRight') decide('right'); });
+
+function plural(n){ if(n>=5||n===0) return n+' testů'; if(n===1) return '1 test'; return n+' testy'; }
+
+function showFinal(){
+  const n=selected;
+  const head = `Jsi 1 z 1000+ mužů, kterého jeho žena takto testuje.`;
+  finEl.innerHTML=`
+    <span class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--gold-2)"><path d="M5 13l4 4L19 7"/></svg> PROŠEL JSI TESTEM</span>
+    <h2>${head}</h2>
+    <p class="lead">Žádný z těch testů není náhoda. Proč to Tvá žena dělá — a jak reagovat tak, aby vztah rostl?</p>
+    <div class="conn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+    <div class="gift">
+      <div class="geye"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg> Odemkl jsi zdarma</div>
+      <div class="gtitle">Živé vysílání s Ondrou Sedláčkem</div>
+      <div class="gdesc">Krok za krokem Ti ukáže, jak shit testy ustát a uchopit je jako příležitost vnést do vztahu <b style="color:var(--gold-2)">respekt, klid a přitažlivost</b>.</div>
+      <div class="gprice"><span class="old">599 Kč</span><span class="free">ZDARMA</span></div>
+    </div>
+    <a class="btn-cta" href="${CONFIG.landingUrl}" target="_blank" rel="noopener">
+      <span class="cta-main">Vyzvednout si přístup <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      <span class="cta-sub">Zdarma na živé vysílání</span>
+    </a>
+    <p class="detail">V pondělí 22. 6. ve 20:00 · míst je omezeno na 500</p>
+    <button class="restart" id="restart">↻ Projít znovu</button>`;
+  overlay.classList.add('on'); finEl.scrollTop=0;
+  finEl.querySelector('#restart').onclick=start;
+}
+
+function start(){
+  overlay.classList.remove('on');
+  queue=shuffle(CARDS); deckIndex=0; selected=0;
+  renderPicks(); renderStack();
+}
+start();
+</script>
