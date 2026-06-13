@@ -153,6 +153,23 @@
   .restart:hover{color:var(--ink-soft)}
 
   @media(min-width:520px){ .app{max-height:790px} }
+  @media (max-height:720px){
+    .topbar{margin-bottom:7px}
+    .picks{margin-bottom:6px;gap:10px}
+    .instr{margin-bottom:9px;font-size:13px}
+    .shittag{margin-bottom:10px}
+    .tc-body{padding:16px 18px 10px}
+    .headline{font-size:clamp(1.25rem,6vw,1.7rem)}
+    .desc{font-size:12px;margin-top:9px}
+    .actions{margin-top:11px}
+    .bact{padding:12px 10px}
+    .hint{margin-top:7px}
+  }
+  @media (max-height:600px){
+    .desc{display:none}
+    .tc-img{flex:0 0 34%}
+    .bsub{display:none}
+  }
 </style>
 
 <div class="app">
@@ -194,25 +211,25 @@ const CONFIG = {
 };
 
 const CARDS = [
-  { img:null, scene:"Žena s rukama v bok, vyčítavý pohled; muž v pozadí zabraný do práce / telefonu.",
+  { img:"https://muzskaalchymie.cz/wp-content/uploads/2026/06/PZT-WEBINAR-3-1.jpg", scene:"Žena s rukama v bok, vyčítavý pohled; muž v pozadí zabraný do práce / telefonu.",
     h:`„Nikdy na mě nemáš <span class="g">čas</span>.“`, d:`Testuje, jestli se začneš <span class="g">omlouvat</span>, nebo zůstaneš klidný.` },
-  { img:null, scene:"Žena odvrácená, zkřížené ruce; muž klidný, zůstává přítomný.",
+  { img:"https://muzskaalchymie.cz/wp-content/uploads/2026/06/PZT-WEBINAR-5.jpg", scene:"Žena odvrácená, zkřížené ruce; muž klidný, zůstává přítomný.",
     h:`„Vůbec mě <span class="g">nemáš rád</span>.“`, d:`Čeká, jestli budeš dokazovat opak, nebo zůstaneš ve <span class="g">svém středu</span>.` },
-  { img:null, scene:"Žena vyčítavě gestikuluje; muž zamyšlený, neskáče do obrany.",
+  { img:"https://muzskaalchymie.cz/wp-content/uploads/2026/06/PZT-WEBINAR-8.jpg", scene:"Žena vyčítavě gestikuluje; muž zamyšlený, neskáče do obrany.",
     h:`„Nikdy mě <span class="g">nepochválíš</span>.“`, d:`Vtahuje tě do hádky o faktech, místo aby řešila <span class="g">pocit</span> za tím.` },
-  { img:null, scene:"Žena s obviňujícím gestem; muž s otevřenou dlaní, lehce v defenzivě.",
+  { img:"https://muzskaalchymie.cz/wp-content/uploads/2026/06/PZT-WEBINAR-9.jpg", scene:"Žena s obviňujícím gestem; muž s otevřenou dlaní, lehce v defenzivě.",
     h:`„Ty se o mě vůbec <span class="g">nezajímáš</span>.“`, d:`Generalizace, která tě má dostat do <span class="g">obranné pozice</span>.` },
-  { img:null, scene:"Žena provokativně s telefonem, napůl odcházející; muž pozoruje, nehne brvou.",
+  { img:"https://muzskaalchymie.cz/wp-content/uploads/2026/06/PZT-WEBINAR-1.jpg", scene:"Žena provokativně s telefonem, napůl odcházející; muž pozoruje, nehne brvou.",
     h:`„Tak já půjdu s tím klukem <span class="g">z workshopu</span>, ten si na mě <span class="g">čas udělá</span>.“`, d:`Klasický test přes <span class="g">žárlivost</span> a <span class="g">nahraditelnost</span>.` },
-  { img:null, scene:"Žena drží telefon a ukazuje na něj; muž klidný, neobhajuje se.",
+  { img:"https://muzskaalchymie.cz/wp-content/uploads/2026/06/PZT-WEBINAR-7.jpg", scene:"Žena drží telefon a ukazuje na něj; muž klidný, neobhajuje se.",
     h:`„Moje kamarádka říká, že její přítel by tohle <span class="g">nikdy neudělal</span>.“`, d:`Srovnání s jiným mužem — testuje, jestli začneš dokazovat svou <span class="g">hodnotu</span>.` },
-  { img:null, scene:"Žena vyčítavě/nostalgicky; muž sebejistý, stojí pevně v tom, kdo je teď.",
+  { img:"https://muzskaalchymie.cz/wp-content/uploads/2026/06/PZT-WEBINAR-2.jpg", scene:"Žena vyčítavě/nostalgicky; muž sebejistý, stojí pevně v tom, kdo je teď.",
     h:`„Dřív jsi byl <span class="g">úplně jiný</span>.“`, d:`Testuje, jestli se začneš omlouvat za to, <span class="g">kdo jsi teď</span>.` },
-  { img:null, scene:"Žena tázavě s rozhozenýma rukama; muž přebírá iniciativu.",
+  { img:"https://muzskaalchymie.cz/wp-content/uploads/2026/06/PZT-WEBINAR-6.jpg", scene:"Žena tázavě s rozhozenýma rukama; muž přebírá iniciativu.",
     h:`„Proč se nikdy <span class="g">nerozhoduješ ty</span>?“`, d:`Zpochybňuje tvůj <span class="g">leadership</span> — čeká, jestli se složíš, nebo převezmeš iniciativu.` },
-  { img:null, scene:"Žena rezignovaně/ostře; muž pevný, klidný nervový systém.",
+  { img:"https://muzskaalchymie.cz/wp-content/uploads/2026/06/PZT-WEBINAR-5.jpg", scene:"Žena rezignovaně/ostře; muž pevný, klidný nervový systém.",
     h:`„Ty prostě nikdy nic <span class="g">nezařídíš</span>.“`, d:`Útok na tvoji schopnost vést — testuje stabilitu tvého <span class="g">nervového systému</span>.` },
-  { img:null, scene:"Vážný moment, odstup mezi nimi; žena vážná, muž klidný a přítomný.",
+  { img:"https://muzskaalchymie.cz/wp-content/uploads/2026/06/PZT-WEBINAR-3.jpg", scene:"Vážný moment, odstup mezi nimi; žena vážná, muž klidný a přítomný.",
     h:`„Nevím, jestli nám to spolu <span class="g">funguje</span>.“`, d:`Nejtěžší z nich — <span class="g">panika nebo doprošování</span> = okamžitý propad.` }
 ];
 
