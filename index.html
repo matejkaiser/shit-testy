@@ -132,21 +132,16 @@
   .fdiv{position:relative;z-index:2;display:flex;align-items:center;gap:10px;margin:24px 0}
   .fdiv .ln{flex:1;height:1px;background:var(--gold-line);opacity:.5}
   .fdiv .dia{width:6px;height:6px;background:var(--grad);transform:rotate(45deg)}
-  .gift{position:relative;z-index:2;border:1.5px solid rgba(124,93,34,.35);border-radius:14px;padding:17px 16px;background:rgba(255,255,255,.42);text-align:center;margin-bottom:18px}
-  .gift .geye{font-family:"Archivo";font-weight:700;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-2);display:flex;align-items:center;justify-content:center;gap:7px}
-  .gift .geye svg{width:15px;height:15px;stroke:var(--gold-2)}
-  .gift .gtitle{font-family:"Archivo";font-weight:800;font-size:1.15rem;color:var(--ink);margin-top:8px;line-height:1.15}
-  .gift .gdesc{font-family:"Inter";font-weight:500;font-size:12.5px;line-height:1.5;color:var(--ink-soft);margin-top:8px}
-  .gift .gprice{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:13px}
-  .gift .old{font-family:"Inter";font-weight:600;font-size:15px;color:var(--muted);text-decoration:line-through}
-  .gift .free{font-family:"Archivo";font-weight:800;font-size:1.25rem;color:var(--green);letter-spacing:.02em}
+  .fin-img{position:relative;z-index:2;width:100%;min-height:160px;border-radius:14px;overflow:hidden;margin-bottom:18px;background:linear-gradient(160deg,#d8ccb4,#c6b794)}
+  .fin-img img{width:100%;display:block}
   .btn-cta{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;cursor:pointer;text-decoration:none;
     color:#fff;background:linear-gradient(180deg,#e23b51,#c41f3a);border:none;padding:17px 16px;border-radius:11px;
     box-shadow:0 14px 30px -10px rgba(196,31,58,.65);transition:transform .15s ease;animation:glowR 2.4s ease-in-out infinite}
   .btn-cta:hover{transform:translateY(-2px)}
   .cta-main{display:flex;align-items:center;gap:12px;font-family:"Archivo";font-weight:800;font-size:clamp(15px,4.2vw,17px);letter-spacing:.04em;text-transform:uppercase}
   .cta-main svg{width:20px;height:20px}
-  .cta-sub{font-family:"Inter";font-weight:500;font-size:11px;letter-spacing:.05em;opacity:.9;text-transform:uppercase}
+  .cta-sub{font-family:"Inter";font-weight:600;font-size:11px;letter-spacing:.05em;opacity:.95;text-transform:uppercase}
+  #cdown{font-weight:800;font-variant-numeric:tabular-nums}
   @keyframes glowR{0%,100%{box-shadow:0 14px 30px -10px rgba(196,31,58,.6)}50%{box-shadow:0 14px 40px -8px rgba(226,59,81,.9)}}
   .detail{position:relative;z-index:2;font-family:"Inter";font-size:12px;color:var(--muted);margin-top:14px}
   .restart{position:relative;z-index:2;background:none;border:none;color:var(--muted);font-family:"Inter";font-size:12.5px;cursor:pointer;margin-top:18px;text-decoration:underline;text-underline-offset:3px}
@@ -242,7 +237,7 @@ const ARROW = `<svg class="arr" viewBox="0 0 60 54" fill="none"><path d="M54 9 C
 const ULINE = `<svg class="uline" viewBox="0 0 200 10" preserveAspectRatio="none"><path d="M2 6 Q 50 1 100 6 T 198 5" stroke="#c0392b" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>`;
 
 const NEED = CONFIG.need;
-let queue = [], deckIndex = 0, selected = 0, busy = false, stackEls = [];
+let queue = [], deckIndex = 0, selected = 0, busy = false, stackEls = [], cdTimer;
 
 const deck=document.getElementById('deck');
 const overlay=document.getElementById('overlay');
@@ -330,20 +325,22 @@ function showFinal(){
     <h2>${head}</h2>
     <p class="lead">Žádný z těch testů není náhoda. Proč to Tvá žena dělá — a jak reagovat tak, aby vztah rostl?</p>
     <div class="conn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
-    <div class="gift">
-      <div class="geye"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg> Odemkl jsi zdarma</div>
-      <div class="gtitle">Živé vysílání s Ondrou Sedláčkem</div>
-      <div class="gdesc">Krok za krokem Ti ukáže, jak shit testy ustát a uchopit je jako příležitost vnést do vztahu <b style="color:var(--gold-2)">respekt, klid a přitažlivost</b>.</div>
-      <div class="gprice"><span class="old">599 Kč</span><span class="free">ZDARMA</span></div>
-    </div>
-    <a class="btn-cta" href="${CONFIG.landingUrl}" target="_blank" rel="noopener">
+    <div class="fin-img">${FINAL.img ? `<img src="${FINAL.img}" alt="">` : phImg('Sem přijde obrázek finální karty (URL doplníš)')}</div>
+    <a class="btn-cta" id="ctaBtn" href="${CONFIG.landingUrl}" target="_blank" rel="noopener">
       <span class="cta-main">Vyzvednout si přístup <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      <span class="cta-sub">Zdarma na živé vysílání</span>
-    </a>
-    <p class="detail">V pondělí 22. 6. ve 20:00 · míst je omezeno na 500</p>
-    <button class="restart" id="restart">↻ Projít znovu</button>`;
+      <span class="cta-sub">Odměna zmizí za <b id="cdown">1:00</b></span>
+    </a>`;
   overlay.classList.add('on'); finEl.scrollTop=0;
-  finEl.querySelector('#restart').onclick=start;
+  finEl.querySelector('#ctaBtn').onclick=function(e){
+    if(window.self!==window.top){ e.preventDefault(); window.parent.postMessage({type:'mw-open-popup'},'*'); }
+  };
+  clearInterval(cdTimer);
+  var left=60, cd=finEl.querySelector('#cdown');
+  cdTimer=setInterval(function(){
+    left--;
+    if(left<=0){ clearInterval(cdTimer); cd.textContent='0:00'; var s=finEl.querySelector('.cta-sub'); if(s) s.innerHTML='Poslední šance — ber to teď!'; return; }
+    cd.textContent='0:'+String(left).padStart(2,'0');
+  },1000);
 }
 
 function start(){
