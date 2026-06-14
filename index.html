@@ -71,8 +71,10 @@
   .desc{font-family:"Inter";font-weight:500;font-size:13px;line-height:1.5;color:var(--ink-soft);margin-top:13px}
   .desc .g{font-weight:700;color:var(--gold-2)}
 
-  .tc-img{flex:0 0 50%;background:linear-gradient(160deg,#d8ccb4,#c6b794);overflow:hidden;position:relative;border-radius:0 0 22px 22px}
-  .tc-img img{width:100%;height:100%;object-fit:cover;display:block}
+  .tc-img{flex:0 0 50%;overflow:hidden;position:relative;border-radius:0 0 22px 22px;background:linear-gradient(100deg,#d8ccb4 30%,#e7dcc5 50%,#d8ccb4 70%);background-size:200% 100%;animation:shimmer 1.4s linear infinite}
+  .tc-img.ld{animation:none;background:#d8ccb4}
+  .tc-img img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .5s ease}
+  @keyframes shimmer{0%{background-position:150% 0}100%{background-position:-150% 0}}
   .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;padding:18px}
   .ph svg{width:32px;height:32px;color:#8c7c55;opacity:.7}
   .ph .tag{font-family:"Archivo";font-weight:700;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#9a875c}
@@ -135,8 +137,9 @@
   .fdiv{position:relative;z-index:2;display:flex;align-items:center;gap:10px;margin:24px 0}
   .fdiv .ln{flex:1;height:1px;background:var(--gold-line);opacity:.5}
   .fdiv .dia{width:6px;height:6px;background:var(--grad);transform:rotate(45deg)}
-  .fin-img{position:relative;z-index:2;width:100%;min-height:160px;border-radius:14px;overflow:hidden;margin-bottom:18px;background:linear-gradient(160deg,#d8ccb4,#c6b794)}
-  .fin-img img{width:100%;display:block}
+  .fin-img{position:relative;z-index:2;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;margin-bottom:18px;background:linear-gradient(100deg,#d8ccb4 30%,#e7dcc5 50%,#d8ccb4 70%);background-size:200% 100%;animation:shimmer 1.4s linear infinite}
+  .fin-img.ld{animation:none;background:#d8ccb4}
+  .fin-img img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .5s ease}
   .btn-cta{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;cursor:pointer;text-decoration:none;
     color:#fff;background:linear-gradient(180deg,#e23b51,#c41f3a);border:none;padding:17px 16px;border-radius:11px;
     box-shadow:0 14px 30px -10px rgba(196,31,58,.65);transition:transform .15s ease;animation:glowR 2.4s ease-in-out infinite}
@@ -176,7 +179,7 @@
     <span class="pcount">VYBRÁNO <b id="selN">0</b> / <span id="needN">3</span></span>
   </div>
   <div class="picks" id="picks"></div>
-  <div class="instr">Vyber <b>3 testy</b>, které Ti dává Tvá žena.</div>
+  <div class="instr">Vyber <b>3 testy</b>, které jsi už někdy dostal od ženy.</div>
 
   <div class="deck" id="deck"></div>
 
@@ -267,7 +270,7 @@ function buildCard(c){
       <h1 class="headline">${c.h}</h1>
       <p class="desc">${c.d}</p>
     </div>
-    <div class="tc-img">${c.img ? `<img src="${c.img}" alt="">` : phImg(c.scene)}</div>`;
+    <div class="tc-img">${c.img ? `<img src="${c.img}" alt="" onload="this.style.opacity=1;this.parentNode.classList.add('ld')" onerror="this.parentNode.classList.add('ld')">` : phImg(c.scene)}</div>`;
   return el;
 }
 
@@ -328,7 +331,7 @@ function showFinal(){
     <h2>${head}</h2>
     <p class="lead">Žádný z těch testů není náhoda. Proč to Tvá žena dělá — a jak reagovat tak, aby vztah rostl?</p>
     <div class="conn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
-    <div class="fin-img"><img src="https://muzskaalchymie.cz/wp-content/uploads/2026/06/PZT-WEBINAR-11.jpg" alt=""></div>
+    <div class="fin-img"><img src="https://muzskaalchymie.cz/wp-content/uploads/2026/06/PZT-WEBINAR-11.jpg" alt="" onload="this.style.opacity=1;this.parentNode.classList.add('ld')" onerror="this.parentNode.classList.add('ld')"></div>
     <a class="btn-cta" id="ctaBtn" href="${CONFIG.landingUrl}" target="_blank" rel="noopener">
       <span class="cta-main">Vyzvednout odměnu <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       <span class="cta-sub">Zbývá jen <b id="cdown">1:00</b></span>
