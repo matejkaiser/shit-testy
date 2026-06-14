@@ -143,8 +143,8 @@
   .btn-cta:hover{transform:translateY(-2px)}
   .cta-main{display:flex;align-items:center;gap:12px;font-family:"Archivo";font-weight:800;font-size:clamp(15px,4.2vw,17px);letter-spacing:.04em;text-transform:uppercase}
   .cta-main svg{width:20px;height:20px}
-  .cta-sub{font-family:"Inter";font-weight:600;font-size:11px;letter-spacing:.05em;opacity:.95;text-transform:uppercase}
-  #cdown{font-weight:800;font-variant-numeric:tabular-nums}
+  .cta-sub{display:flex;align-items:center;gap:5px;font-family:"Inter";font-weight:600;font-size:12px;letter-spacing:.04em;opacity:.97;text-transform:uppercase}
+  #cdown{font-weight:800;font-variant-numeric:tabular-nums;background:rgba(0,0,0,.2);padding:2px 8px;border-radius:7px}
   @keyframes glowR{0%,100%{box-shadow:0 14px 30px -10px rgba(196,31,58,.6)}50%{box-shadow:0 14px 40px -8px rgba(226,59,81,.9)}}
   .detail{position:relative;z-index:2;font-family:"Inter";font-size:12px;color:var(--muted);margin-top:14px}
   .restart{position:relative;z-index:2;background:none;border:none;color:var(--muted);font-family:"Inter";font-size:12.5px;cursor:pointer;margin-top:18px;text-decoration:underline;text-underline-offset:3px}
@@ -173,10 +173,10 @@
 
 <div class="app">
   <div class="topbar">
-    <span class="pcount">OZNAČENO <b id="selN">0</b> / <span id="needN">3</span></span>
+    <span class="pcount">VYBRÁNO <b id="selN">0</b> / <span id="needN">3</span></span>
   </div>
   <div class="picks" id="picks"></div>
-  <div class="instr">Označ <b>3 testy</b>, které Ti dává Tvá žena.</div>
+  <div class="instr">Vyber <b>3 testy</b>, které Ti dává Tvá žena.</div>
 
   <div class="deck" id="deck"></div>
 
@@ -330,8 +330,8 @@ function showFinal(){
     <div class="conn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
     <div class="fin-img">${FINAL.img ? `<img src="${FINAL.img}" alt="">` : phImg('Sem přijde obrázek finální karty (URL doplníš)')}</div>
     <a class="btn-cta" id="ctaBtn" href="${CONFIG.landingUrl}" target="_blank" rel="noopener">
-      <span class="cta-main">Vyzvednout si přístup <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      <span class="cta-sub">Odměna zmizí za <b id="cdown">1:00</b></span>
+      <span class="cta-main">Vyzvednout odměnu <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      <span class="cta-sub">Zbývá jen <b id="cdown">1:00</b></span>
     </a>`;
   overlay.classList.add('on'); finEl.scrollTop=0;
   finEl.querySelector('#ctaBtn').onclick=function(e){
